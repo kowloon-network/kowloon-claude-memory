@@ -16,6 +16,15 @@ spreading the raw payload throws a Mongoose CastError.
 - Confirmed + fixed (2026-07-15): `publicKey`. AP sends `{ id, owner, publicKeyPem }`;
   `User.publicKey` is a PEM **String** (`schema/User.js`). Now normalized to
   `publicKey.publicKeyPem` before the upsert.
+- Confirmed + fixed (2026-07-22): **identity fields were never mapped.** The upsert
+  keyed on `payload.id` (the actor URL) and spread the raw actor, so a hydrated
+  remote user got `id = https://host/users/name` (should be the Kowloon handle
+  `@name@domain`), `username = undefined`, `actorId = undefined`. This 404'd remote
+  profile views (`GET /users/:id` is local-only; the app now falls back to `/lookup`
+  in `client/src/feed/index.js#getUser`). Fix: map `id=idStr`,
+  `username=preferredUsername||handle.username`, `actorId=payload.id`,
+  `objectType='User'`, and key the upsert on `{ id: idStr }`. This is the start of the
+  real mapper called for below.
 - This path is ONLY hit by `hydrateRemoteIntoDB: true`, i.e. `GET /lookup` (and
   the old `/users/lookup`). Everything else uses lightweight member subdocs
   (`methods/parse/toMember.js`) or the FeedItems `actor` subdoc, so the bug was
