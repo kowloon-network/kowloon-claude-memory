@@ -30,7 +30,6 @@ type Circle**, so it IS included (see [[project_following_circle_gotcha]]).
   rebuilt/deployed; 4 repos touched: kowloon, kowloon-client, kowloon-frontend).
 - Mobile (`ProfileActions.jsx`): only the #2 seed applied (mobile has no toast
   system; its picker modal shows the ✓ inline + Alerts on failure, so it didn't
-  need #1). COMMITTED to kowloon-mobile `links-in-app` but **NOT built** — rides
-  the next EAS build (held per [[feedback_no_builds_without_permission]]).
+  need #1). **Shipped in the 2026-08-05 tester build.**
 
 Related: [[project_tester_feedback_open_items]], [[circle_ux]], [[web_app_parity]].
