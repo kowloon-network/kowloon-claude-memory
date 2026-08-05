@@ -31,7 +31,17 @@ Descriptor: `{ provider, mode:'inline'|'linkout', embedUrl, thumbnail, aspectRat
 **Web:** `frontend/src/components/posts/EmbedPlayer.jsx` in `PostBody`'s
 featured-media slot. **Mobile:** `mobile/src/components/posts/EmbedPlayer.jsx` uses
 `react-native-webview` (ALREADY a dep — no new native module) in `PostCard`'s Link
-branch. Shipped in the 2026-08-05 tester build.
+branch.
+
+**Mobile YouTube-in-WebView gotcha (three tester errors, only the 3rd fixed it):**
+YouTube is finicky in an Android WebView. (1) `source={{uri: embedUrl}}` (top-level
+nav, no referrer) → "Error 153, player configuration error". (2) baseUrl + IFrame
+Player API → still "Error 152, video unavailable". (3) THE FIX: a plain iframe in
+an HTML doc (`source={{html, baseUrl}}`) PLUS override the WebView `userAgent` to a
+normal Chrome UA — Android System WebView's default UA carries a `wv` token that
+YouTube treats as unsupported and refuses. The UA lives in the shared registry as
+`EMBED_WEBVIEW_USER_AGENT` (`@kowloon/client/embeds`) — one place to bump the Chrome
+version if a provider ever rejects old browsers.
 
 **Server `/preview` uses a SEPARATE oEmbed map, NOT the client registry.** Why: the
 server image can't import `@kowloon/client` — `server/Dockerfile.prod` uses the
