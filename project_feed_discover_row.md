@@ -27,4 +27,13 @@ admin-curated content shows there too.
   FeedDiscoverRow.jsx`, mounted as the feed FlatList `ListHeaderComponent` in
   `app/(tabs)/feed.js` (rides the build). Both reuse existing avatar components.
 
-Prototype Josh liked ("it's awesome"). Related: [[project_recommendations_discover]], [[web_app_parity]].
+**Security fix 2026-08-06:** the Discover **heuristic backfill** (`methods/discover/
+heuristic.js`, used to fill hybrid/heuristic sections beyond explicit
+Recommendations) auto-surfaced SERVER-OWNED circles to local viewers — leaked the
+"KWLN Admins" roster into the Discover row + page. `type:"Circle"` already excludes
+System circles, but server-owned admin/curated-people circles are `type:"Circle"`,
+`actorId:@<domain>`, `to:@<domain>` (visible to local viewers). Fix: the circles
+pool now excludes `actorId === @<localDomain>`. **Server-owned circles appear in
+Discover only when EXPLICITLY curated via a Recommendation, never heuristically.**
+
+Prototype Josh liked ("it's awesome"). Related: [[project_recommendations_discover]], [[web_app_parity]], [[project_group_visibility_gotcha]].
