@@ -69,4 +69,12 @@ page replayed on the next few app opens. Root cause = a load-order race. Fixes i
   UNdelivered share survives a brief background; the router resets explicitly once
   delivered.
 
+**Regression + fix 2026-08-06 (unbuilt at write time):** that rewrite ALSO dropped
+the old `setTimeout(0)` before `router.navigate`, which broke sharing ENTIRELY
+(opened the app, did nothing). A synchronous navigate on cold start silently
+no-ops; the "no throw = success" logic then consumed the share. Fix: DEFER the
+navigate (setTimeout), consume/reset ONLY on a real navigate, non-blocking marker
+load, in-flight guard. Same cold-start-nav trap as the push-tap fix — see
+[[feedback_mobile_coldstart_nav]].
+
 Related: [[project-mobile-app-scaffold]], [[project-mobile-strategy]], [[audio-player]].
